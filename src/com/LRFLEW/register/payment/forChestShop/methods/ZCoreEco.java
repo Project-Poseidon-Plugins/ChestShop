@@ -1,11 +1,11 @@
 package com.LRFLEW.register.payment.forChestShop.methods;
 
 import com.LRFLEW.register.payment.forChestShop.Method;
+import me.zavdav.zcore.ZCore;
+import me.zavdav.zcore.api.Economy;
+import me.zavdav.zcore.util.PlayerUtils;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
-import org.poseidonplugins.zcore.ZCore;
-import org.poseidonplugins.zcore.api.Economy;
-import org.poseidonplugins.zcore.util.Utils;
 
 import java.util.UUID;
 
@@ -22,7 +22,7 @@ public class ZCoreEco implements Method {
     }
 
     public String getVersion() {
-        return "1.0-SNAPSHOT";
+        return zcore.getDescription().getVersion();
     }
 
     public int fractionalDigits() {
@@ -43,7 +43,7 @@ public class ZCoreEco implements Method {
 
     public boolean hasAccount(String name, World world) {
         try {
-            UUID uuid = Utils.getUUIDFromUsername(name);
+            UUID uuid = PlayerUtils.getUUIDFromUsername(name);
             return Economy.userExists(uuid);
         } catch (Throwable e) {
             return false;
@@ -56,7 +56,7 @@ public class ZCoreEco implements Method {
 
     public MethodAccount getAccount(String name, World world) {
         if (!hasAccount(name, world)) return null;
-        return new ZEcoAccount(Utils.getUUIDFromUsername(name));
+        return new ZEcoAccount(PlayerUtils.getUUIDFromUsername(name));
     }
 
     public MethodBankAccount getBankAccount(String bank, String name, World world) {
