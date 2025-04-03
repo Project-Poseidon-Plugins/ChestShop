@@ -7,6 +7,7 @@ import me.zavdav.zcore.util.PlayerUtils;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public class ZCoreEco implements Method {
@@ -30,7 +31,7 @@ public class ZCoreEco implements Method {
     }
 
     public String format(double amount) {
-        return Economy.formatBalance(amount);
+        return Economy.formatBalance(BigDecimal.valueOf(amount));
     }
 
     public boolean hasBanks() {
@@ -81,12 +82,17 @@ public class ZCoreEco implements Method {
         }
 
         public double balance(World world) {
-            return Economy.getBalance(uuid);
+            try {
+                return Economy.getBalance(uuid).doubleValue();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                return 0;
+            }
         }
 
         public boolean set(double amount, World world) {
             try {
-                Economy.setBalance(uuid, amount);
+                Economy.setBalance(uuid, BigDecimal.valueOf(amount));
                 return true;
             } catch (Throwable e) {
                 e.printStackTrace();
@@ -96,7 +102,7 @@ public class ZCoreEco implements Method {
 
         public boolean add(double amount, World world) {
             try {
-                Economy.addBalance(uuid, amount);
+                Economy.addBalance(uuid, BigDecimal.valueOf(amount));
                 return true;
             } catch (Throwable e) {
                 e.printStackTrace();
@@ -106,7 +112,7 @@ public class ZCoreEco implements Method {
 
         public boolean subtract(double amount, World world) {
             try {
-                Economy.subtractBalance(uuid, amount);
+                Economy.subtractBalance(uuid, BigDecimal.valueOf(amount));
                 return true;
             } catch (Throwable e) {
                 e.printStackTrace();
@@ -116,7 +122,7 @@ public class ZCoreEco implements Method {
 
         public boolean multiply(double amount, World world) {
             try {
-                Economy.setBalance(uuid, Economy.getBalance(uuid) * amount);
+                Economy.multiplyBalance(uuid, BigDecimal.valueOf(amount));
                 return true;
             } catch (Throwable e) {
                 e.printStackTrace();
@@ -126,7 +132,7 @@ public class ZCoreEco implements Method {
 
         public boolean divide(double amount, World world) {
             try {
-                Economy.setBalance(uuid, Economy.getBalance(uuid) / amount);
+                Economy.divideBalance(uuid, BigDecimal.valueOf(amount));
                 return true;
             } catch (Throwable e) {
                 e.printStackTrace();
@@ -136,7 +142,7 @@ public class ZCoreEco implements Method {
 
         public boolean hasEnough(double amount, World world) {
             try {
-                return Economy.hasEnough(uuid, amount);
+                return Economy.hasEnough(uuid, BigDecimal.valueOf(amount));
             } catch (Throwable e) {
                 e.printStackTrace();
                 return false;
@@ -145,7 +151,7 @@ public class ZCoreEco implements Method {
 
         public boolean hasOver(double amount, World world) {
             try {
-                return Economy.getBalance(uuid) > amount;
+                return Economy.hasOver(uuid, BigDecimal.valueOf(amount));
             } catch (Throwable e) {
                 e.printStackTrace();
                 return false;
@@ -154,7 +160,7 @@ public class ZCoreEco implements Method {
 
         public boolean hasUnder(double amount, World world) {
             try {
-                return Economy.getBalance(uuid) < amount;
+                return Economy.hasUnder(uuid, BigDecimal.valueOf(amount));
             } catch (Throwable e) {
                 e.printStackTrace();
                 return false;
