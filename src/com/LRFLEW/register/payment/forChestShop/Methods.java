@@ -44,6 +44,7 @@ public class Methods {
 //        addMethod("iConomy", new com.LRFLEW.register.payment.forChestShop.methods.iCo4());
 //        addMethod("BOSEconomy", new com.LRFLEW.register.payment.forChestShop.methods.BOSE6());
 //        addMethod("BOSEconomy", new com.LRFLEW.register.payment.forChestShop.methods.BOSE7());
+        addMethod("ZCore", new com.LRFLEW.register.payment.forChestShop.methods.ZCoreEco());
         addMethod("Essentials", new com.LRFLEW.register.payment.forChestShop.methods.EE17());
 //        addMethod("Currency", new com.LRFLEW.register.payment.forChestShop.methods.MCUR());
         Dependencies.add("MultiCurrency");

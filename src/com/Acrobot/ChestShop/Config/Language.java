@@ -8,6 +8,9 @@ public enum Language {
     iteminfo("&aItem Information:&f"),
 
     ACCESS_DENIED("You don't have permission to do that!"),
+    PLAYER_ONLY("Only players can run this command."),
+
+    PLAYER_NOT_FOUND("Could not find player %player%"),
 
     NOT_ENOUGH_MONEY("You don't have enough money!"),
     NOT_ENOUGH_MONEY_SHOP("Shop owner doesn't have enough money!"),
@@ -23,14 +26,14 @@ public enum Language {
     NOT_ENOUGH_STOCK_IN_YOUR_SHOP("Your %material shop is out of stock!"),
 
     YOU_BOUGHT_FROM_SHOP("You bought %amount %item from %owner for %price."),
-    SOMEBODY_BOUGHT_FROM_YOUR_SHOP("%buyer bought %amount %item for %price from you."),
+    SOMEBODY_BOUGHT_FROM_YOUR_SHOP("%buyer bought %amount %item for %price from %player."),
 
     YOU_ACTIVATED_SIGN("You activated %owner's sign for %price."),
-    SOMEBODY_ACTIVATED_YOUR_SIGN("%buyer activated your sign for %price."),
+    SOMEBODY_ACTIVATED_YOUR_SIGN("%buyer activated %player sign for %price."),
     SIGN_NOT_CONNECTED("This shop is missing a redstone torch to activate."),
 
     YOU_SOLD_TO_SHOP("You sold %amount %item to %buyer for %price."),
-    SOMEBODY_SOLD_TO_YOUR_SHOP("%seller sold %amount %item for %price to you."),
+    SOMEBODY_SOLD_TO_YOUR_SHOP("%seller sold %amount %item for %price to %player."),
 
     YOU_CANNOT_CREATE_SHOP("You can't create this type of shop!"),
     NO_CHEST_DETECTED("Couldn't find a chest!"),
@@ -41,8 +44,12 @@ public enum Language {
     SHOP_CREATED("Shop successfully created!"),
 
     NO_PERMISSION("You don't have permissions to do that!"),
-    INCORRECT_ITEM_ID("You have specified invalid item id!");
+    INCORRECT_ITEM_ID("You have specified invalid item id!"),
 
+    HISTORY_PAGE("Shop History: Page &c%page% &fof &c%pages%"),
+    HISTORY_DISABLED("This feature is disabled, please enable LOG_TO_CSV"),
+    HISTORY_EMPTY("There are no entries in the transaction history!"),
+    INVALID_PAGE("You entered an invalid page number!");
 
     private final String text;
 
