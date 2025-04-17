@@ -78,9 +78,6 @@ public class signChange extends BlockListener {
         if (isShopSign) {
             thirdLine = formatThirdLine(line[2]);
         }
-        else if (isRedstoneSign) {
-            thirdLine = formatThirdLineRedstoneSign(line[2]);
-        }
         if (thirdLine == null) {
             dropSign(event);
             player.sendMessage(Config.getLocal(Language.YOU_CANNOT_CREATE_SHOP));
@@ -164,15 +161,6 @@ public class signChange extends BlockListener {
     }
 
     private static String formatThirdLine(String thirdLine) {
-        String[] split = thirdLine.split(":");
-        if (uNumber.isFloat(split[0])) thirdLine = "B " + thirdLine;
-        if (split.length == 2 && uNumber.isFloat(split[1])) thirdLine = thirdLine + " S";
-        if (thirdLine.length() > 15) thirdLine = thirdLine.replace(" ", "");
-
-        return (thirdLine.length() > 15 ? null : thirdLine);
-    }
-
-    private static String formatThirdLineRedstoneSign(String thirdLine) {
         String[] split = thirdLine.split(":");
         if (uNumber.isFloat(split[0])) thirdLine = "B " + thirdLine;
         if (split.length == 2 && uNumber.isFloat(split[1])) thirdLine = thirdLine + " S";

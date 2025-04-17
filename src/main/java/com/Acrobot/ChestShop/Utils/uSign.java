@@ -39,7 +39,7 @@ public class uSign {
 
     public static boolean isValid(String[] line) {
         try {
-            boolean validChestShop = isValidPreparedSign(line) && (line[2].contains("B") || line[2].contains("S"));
+            boolean validChestShop = isValidPreparedSign(line);
             boolean validRedstoneSign = isValidPreparedRedstoneSign(line) && line[2].contains("B");
             return validChestShop || validRedstoneSign;
         } catch (Exception e) {

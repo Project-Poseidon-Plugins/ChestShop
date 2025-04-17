@@ -9,10 +9,12 @@ import com.Acrobot.ChestShop.Data.ShopLocation;
 import com.Acrobot.ChestShop.Data.Shops;
 import com.Acrobot.ChestShop.Data.UUIDCache;
 import com.Acrobot.ChestShop.Economy;
+import com.Acrobot.ChestShop.Items.Items;
 import com.Acrobot.ChestShop.Logging.Logging;
 import com.Acrobot.ChestShop.Permission;
 import com.Acrobot.ChestShop.Utils.uInventory;
 import com.Acrobot.ChestShop.Utils.uLongName;
+import com.Acrobot.ChestShop.Utils.uNumber;
 import com.Acrobot.ChestShop.Utils.uSign;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -35,6 +37,7 @@ public class Shop {
     public final float sellPrice;
     public final String owner;
 
+    public final Sign sign;
     public final World world;
     public final Location signLocation;
 
@@ -46,6 +49,7 @@ public class Shop {
         this.sellPrice = (!buy ? uSign.sellPrice(sign.getLine(2)) : -1);
         this.owner = sign.getLine(0);
         this.stockAmount = uSign.itemAmount(sign.getLine(1));
+        this.sign = sign;
         this.world = sign.getWorld(); //Multi-world Support
         this.signLocation = sign.getBlock().getLocation();
     }
@@ -62,9 +66,14 @@ public class Shop {
         }
 
         if (buyPrice == -1) {
-            player.sendMessage(Config.getLocal(Language.NO_BUYING_HERE));
+            if (canTradeItems()) {
+                tradeItems(player);
+            } else {
+                player.sendMessage(Config.getLocal(Language.NO_BUYING_HERE));
+            }
             return;
         }
+
         if (!Permission.has(player, Permission.BUY) && !Permission.has(player, Permission.BUY_ID + Integer.toString(stock.getTypeId()))) {
             player.sendMessage(Config.getLocal(Language.NO_PERMISSION));
             return;
@@ -212,4 +221,81 @@ public class Shop {
             }
         }
     }
+
+    private boolean canTradeItems() {
+        return sign.getLine(2).matches("[0-9]+ .+");
+    }
+
+    private void tradeItems(Player player) {
+        String[] split = sign.getLine(2).split(" ", 2);
+
+        if (!uNumber.isInteger(split[0]) || Integer.parseInt(split[0]) < 1) {
+            player.sendMessage(Config.getLocal(Language.NO_BUYING_HERE));
+            return;
+        }
+        if (split.length != 2 || Items.getItemStack(split[1]) == null) {
+            player.sendMessage(Config.getLocal(Language.NO_BUYING_HERE));
+            return;
+        }
+
+        int amount = Integer.parseInt(split[0]);
+        ItemStack itemStack = Items.getItemStack(split[1]);
+
+        if (!Permission.has(player, Permission.BUY) && !Permission.has(player, Permission.BUY_ID + Integer.toString(stock.getTypeId()))) {
+            player.sendMessage(Config.getLocal(Language.NO_PERMISSION));
+            return;
+        }
+        if (!stockFitsPlayer(player)) {
+            player.sendMessage(Config.getLocal(Language.NOT_ENOUGH_SPACE_IN_INVENTORY));
+            return;
+        }
+
+        String materialName = stock.getType().name();
+
+        if (!isAdminShop() && !hasEnoughStock()) {
+            player.sendMessage(Config.getLocal(Language.NOT_ENOUGH_STOCK));
+            if (!Config.getBoolean(Property.SHOW_MESSAGE_OUT_OF_STOCK)) return;
+            sendMessageToOwner(Config.getLocal(Language.NOT_ENOUGH_STOCK_IN_YOUR_SHOP).replace("%material", materialName));
+            return;
+        }
+
+        if (uInventory.amount(player.getInventory(), itemStack, itemStack.getDurability()) < amount) {
+            player.sendMessage(Config.getLocal(Language.NOT_ENOUGH_ITEMS_TO_SELL));
+            return;
+        }
+
+        if (!isAdminShop() && !chest.fits(itemStack, amount, itemStack.getDurability())) {
+            player.sendMessage(Config.getLocal(Language.NOT_ENOUGH_SPACE_IN_CHEST));
+            return;
+        }
+
+        if (!isAdminShop()) {
+            chest.removeItem(stock, durability, stockAmount);
+            chest.addItem(itemStack, amount);
+        }
+
+        String formattedItem = amount + " " + itemStack.getType().toString();
+        if (Config.getBoolean(Property.SHOW_TRANSACTION_INFORMATION_CLIENT)) {
+            player.sendMessage(Config.getLocal(Language.YOU_BOUGHT_FROM_SHOP)
+                    .replace("%amount", String.valueOf(stockAmount))
+                    .replace("%item", materialName)
+                    .replace("%owner", owner)
+                    .replace("%price", formattedItem));
+        }
+
+        uInventory.remove(player.getInventory(), itemStack, amount, itemStack.getDurability());
+        uInventory.add(player.getInventory(), stock, stockAmount);
+        Logging.logTransaction(true, this, player);
+        player.updateInventory();
+
+        if (Config.getBoolean(Property.SHOW_TRANSACTION_INFORMATION_OWNER)) {
+            sendMessageToOwner(Config.getLocal(Language.SOMEBODY_BOUGHT_FROM_YOUR_SHOP)
+                    .replace("%amount", String.valueOf(stockAmount))
+                    .replace("%item", materialName)
+                    .replace("%buyer", player.getName())
+                    .replace("%price", formattedItem));
+        }
+
+    }
+
 }
